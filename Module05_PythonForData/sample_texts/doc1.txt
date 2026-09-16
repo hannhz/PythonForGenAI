@@ -1,0 +1,1 @@
+RAG combines retrieval and generation. It is powerful. It reduces hallucination.

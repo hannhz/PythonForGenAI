@@ -1,0 +1,9 @@
+# HTTP client used by Module04_FileIO_APIs
+httpx==0.28.1
+
+# Loads .env files in Module04_FileIO_APIs
+python-dotenv==1.2.3
+
+# Data processing used by Module05_PythonForData
+numpy==2.5.3
+pandas==3.0.5
