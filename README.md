@@ -1,113 +1,93 @@
 # Python for Generative AI
 
-Repository ini berisi kumpulan materi, contoh program, latihan, dan mini project Python yang disusun sebagai dasar untuk mempelajari **Generative AI**. Materi dimulai dari konsep dasar Python, dilanjutkan dengan struktur data, Object-Oriented Programming (OOP), pengolahan file dan API, hingga pengolahan data menggunakan NumPy dan Pandas.
+Repository ini berisi materi, contoh program, latihan, dan mini project Python untuk mempelajari **Generative AI**. Materi dibagi menjadi dua fase: dasar Python dan data pada Phase 1, lalu API LLM, prompt engineering, embedding, dan semantic search pada Phase 2.
 
 ## Identitas
 
-| Keterangan    | Data                                   |
-| ------------- | -------------------------------------- |
-| Nama          | Hanan Hafizhah Zarkasi                 |
-| NRP           | 5323600015                             |
-| Program Studi | Teknologi Rekayasa Multimedia          |
-| Fakultas      | Jurusan Teknologi Multimedia Kreatif   |
-| Universitas   | Politeknik Elektronika Negeri Surabaya |
-| Mata Kuliah   | Gen AI                                 |
-| Kelas         | TRM 2023                               |
+| Keterangan | Data |
+| --- | --- |
+| Nama | Hanan Hafizhah Zarkasi |
+| NRP | 5323600015 |
+| Program Studi | Teknologi Rekayasa Multimedia |
+| Fakultas | Jurusan Teknologi Multimedia Kreatif |
+| Universitas | Politeknik Elektronika Negeri Surabaya |
+| Mata Kuliah | Gen AI |
+| Kelas | TRM 2023 |
 
 ## Isi Repository
 
-Repository ini terbagi menjadi lima modul utama:
+| Modul | Topik yang Dipelajari |
+| --- | --- |
+| `Module01_PythonFoundations` | Variabel, tipe data, string, number, control flow, function, lambda, scope, closure, dan exception handling. |
+| `Module02_DataStructures` | List, dictionary, set, tuple, comprehension, dan generator. |
+| `Module03_OOP_Modules` | Class, inheritance, decorator, dataclass, module, dan package. |
+| `Module04_FileIO_APIs` | File teks, JSON, CSV, async/await, simulasi API, environment variable, dan secret. |
+| `Module05_PythonForData` | NumPy, cosine similarity, Pandas, data cleaning, agregasi, dan pipeline evaluasi model. |
+| `Module06_LLM_APIs` | Anthropic/OpenAI SDK, streaming, tool calling, vision, token management, dan abstraction client. |
+| `Module07_PromptEngineering` | System prompt, few-shot, chain-of-thought, structured output, template, dan prompt evaluation. |
+| `Module08_Embeddings_SemanticSearch` | Embedding, cosine similarity, vector store, chunking, retrieval evaluation, metadata filter, hybrid search, dan cache. |
 
-| Modul                        | Topik yang Dipelajari                                                                                                                                           |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Module01_PythonFoundations` | Variabel dan tipe data, string, number, control flow, function, `*args` dan `**kwargs`, lambda, scope, closure, exception handling, serta latihan dasar Python. |
-| `Module02_DataStructures`    | List, dictionary, set, tuple, comprehension, generator, dan latihan penggunaan struktur data.                                                                   |
-| `Module03_OOP_Modules`       | Class dan object, inheritance, decorator, dataclass, module, package, serta latihan OOP seperti rate limiter, prompt template, dan retry decorator.             |
-| `Module04_FileIO_APIs`       | Operasi file teks, JSON, CSV, async/await, simulasi pemanggilan LLM, environment variable, pengelolaan secret, dan latihan File I/O.                            |
-| `Module05_PythonForData`     | NumPy, cosine similarity, dasar-dasar Pandas, data cleaning, `groupby`, agregasi, serta mini project pipeline evaluasi model.                                   |
+Checklist kebutuhan dan kekurangan bukti untuk setiap percobaan Phase 2 tersedia di [Phase 2/README.md](Phase%202/README.md).
 
-Beberapa folder juga memiliki direktori `outputs` yang berisi tangkapan layar hasil eksekusi program. Data contoh dan hasil pengolahan disimpan dalam format seperti `.txt`, `.json`, dan `.csv`.
-
-## Mini Project
-
-Pada Modul 05 terdapat mini project **Model Evaluation Pipeline**. Program ini menyimulasikan respons beberapa model LLM, menghitung skor berdasarkan kata kunci, mengukur latency, menganalisis hasil menggunakan Pandas, lalu menyimpannya ke dalam file CSV.
-
-## Teknologi yang Digunakan
+## Teknologi
 
 - Python 3.10 atau lebih baru
-- NumPy
-- Pandas
-- HTTPX
-- python-dotenv
+- NumPy dan Pandas
+- HTTPX dan python-dotenv
+- Anthropic Python SDK
+- OpenAI Python SDK
 
-## Cara Menjalankan Project
+## Cara Menjalankan
 
-1. Clone repository:
-
-   ```bash
-   git clone https://github.com/USERNAME/NAMA-REPOSITORY.git
-   cd NAMA-REPOSITORY
-   ```
-
-2. Buat dan aktifkan virtual environment:
-
-   ```bash
-   python -m venv .venv
-   ```
-
-   Windows PowerShell:
+1. Clone repository dan masuk ke folder project.
+2. Buat virtual environment:
 
    ```powershell
+   python -m venv .venv
    .\.venv\Scripts\Activate.ps1
    ```
 
-   Linux/macOS:
+3. Instal dependency:
 
-   ```bash
-   source .venv/bin/activate
-   ```
-
-3. Instal seluruh dependency:
-
-   ```bash
+   ```powershell
    pip install -r requirements.txt
    ```
 
-4. Jalankan file Python yang ingin dipelajari. Contoh:
+4. Jalankan percobaan yang diinginkan, misalnya:
 
-   ```bash
-   python Module01_PythonFoundations/01_variables_and_types.py
-   python Module05_PythonForData/05_mini_project_eval_pipeline.py
+   ```powershell
+   python "Phase 1/Module01_PythonFoundations/01_variables_and_types.py"
+   python "Phase 1/Module05_PythonForData/05_mini_project_eval_pipeline.py"
+   python "Phase 2/Module08_Embeddings_SemanticSearch/02_cosine_similarity.py"
    ```
+
+Percobaan online memerlukan `.env`. Salin `.env.example` pada modul terkait menjadi `.env`, lalu isi key milik sendiri. Panggilan API dapat menimbulkan biaya; percobaan yang bisa dijalankan offline ditandai pada checklist Phase 2.
 
 ## Struktur Folder
 
 ```text
 PythonForGenAI/
-├── Module01_PythonFoundations/
-├── Module02_DataStructures/
-├── Module03_OOP_Modules/
-├── Module04_FileIO_APIs/
-├── Module05_PythonForData/
-├── requirements.txt
-└── README.md
+|-- Phase 1/
+|   |-- Module01_PythonFoundations/
+|   |-- Module02_DataStructures/
+|   |-- Module03_OOP_Modules/
+|   |-- Module04_FileIO_APIs/
+|   `-- Module05_PythonForData/
+|-- Phase 2/
+|   |-- Module06_LLM_APIs/
+|   |-- Module07_PromptEngineering/
+|   `-- Module08_Embeddings_SemanticSearch/
+|-- requirements.txt
+`-- README.md
 ```
 
-## Tujuan Pembelajaran
+## Mini Project
 
-Setelah mempelajari isi repository ini, diharapkan pembaca dapat:
+Module 05 memiliki mini project **Model Evaluation Pipeline** yang menyimulasikan respons beberapa model LLM, menghitung skor dan latency, menganalisis hasil dengan Pandas, lalu menyimpannya ke CSV.
 
-- Memahami dasar-dasar pemrograman Python.
-- Menggunakan struktur data Python secara tepat.
-- Menerapkan konsep OOP, module, dan package.
-- Membaca, menulis, dan mengolah berbagai format file.
-- Memahami dasar pemanggilan API dan proses asynchronous.
-- Mengolah serta menganalisis data dengan NumPy dan Pandas.
-- Memahami gambaran awal pipeline evaluasi model Generative AI.
+## Catatan Keamanan
 
-## Catatan
-
-Sebagian contoh pemanggilan LLM pada repository ini masih berupa simulasi sehingga dapat dijalankan secara lokal tanpa API key dan tanpa melakukan request ke layanan model eksternal.
+Sebagian contoh dapat dijalankan offline. Contoh lain melakukan request nyata ke Anthropic/OpenAI dan sengaja dilewati saat API key belum tersedia. Jangan commit file `.env` atau menaruh API key langsung di source code.
 
 ---
 
