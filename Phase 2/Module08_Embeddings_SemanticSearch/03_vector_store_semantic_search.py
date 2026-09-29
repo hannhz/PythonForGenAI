@@ -10,14 +10,10 @@
 import numpy as np
 from dataclasses import dataclass, field
 from typing import Optional
-from openai import OpenAI
-import os
 from dotenv import load_dotenv
+from _embedding_provider import embed_texts, has_embedding_provider
 
 load_dotenv()
-
-openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"]) if os.getenv("OPENAI_API_KEY") else None
-
 
 # ── Data structures ────────────────────────────────────────────────────────────
 
@@ -40,9 +36,7 @@ class SearchResult:
 
 def embed_batch(texts: list[str], model: str = "text-embedding-3-small") -> np.ndarray:
     """Embed texts in a single API call. Returns (n, dim) float32 array."""
-    response = openai_client.embeddings.create(input=texts, model=model)
-    vectors = sorted(response.data, key=lambda e: e.index)
-    return np.array([v.embedding for v in vectors], dtype=np.float32)
+    return embed_texts(texts, model=model)
 
 
 # ── Simple in-memory vector store ──────────────────────────────────────────────
@@ -137,8 +131,8 @@ QUERIES = [
 
 
 if __name__ == "__main__":
-    if openai_client is None:
-        print("OPENAI_API_KEY is not set. Add it to a .env file in this folder.")
+    if not has_embedding_provider():
+        print("Set OPENAI_API_KEY or GEMINI_API_KEY to run semantic search.")
     else:
         store = VectorStore()
         store.add_documents(CORPUS)

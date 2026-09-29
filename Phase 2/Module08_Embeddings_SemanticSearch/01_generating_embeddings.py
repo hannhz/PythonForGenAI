@@ -16,25 +16,19 @@
 #
 # 8.2 Generating Embeddings
 #
-# NOTE: embed() below makes a REAL, billed API call to OpenAI. It requires a
-# valid OPENAI_API_KEY in a .env file in this folder to run.
+# NOTE: embed() below makes a REAL API call to OpenAI or Gemini. It requires a
+# valid OPENAI_API_KEY or GEMINI_API_KEY.
 
-from openai import OpenAI
-import os
 import numpy as np
 from dotenv import load_dotenv
+from _embedding_provider import embed_texts, has_embedding_provider
 
 load_dotenv()
 
 
 def embed(texts: list[str], model: str = "text-embedding-3-small") -> np.ndarray:
     """Embed a list of texts. Returns array of shape (n, dim)."""
-    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-    # API accepts up to 2048 texts per call
-    response = client.embeddings.create(input=texts, model=model)
-    # Sort by index to guarantee order matches input
-    vectors = sorted(response.data, key=lambda e: e.index)
-    return np.array([v.embedding for v in vectors], dtype=np.float32)
+    return embed_texts(texts, model=model)
 
 
 TEXTS = [
@@ -47,8 +41,8 @@ TEXTS = [
 
 
 if __name__ == "__main__":
-    if not os.getenv("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY is not set. Add it to a .env file in this folder.")
+    if not has_embedding_provider():
+        print("Set OPENAI_API_KEY or GEMINI_API_KEY to generate embeddings.")
     else:
         embeddings = embed(TEXTS)
         print(f"Shape: {embeddings.shape}")   # (5, 1536)

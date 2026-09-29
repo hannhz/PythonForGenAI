@@ -33,6 +33,7 @@ Rules:
 - Be direct. Do not pad with compliments.
 - If code is correct, say so briefly and move on.
 - Always include the corrected code when suggesting a fix.
+- Return only the 6 highest-impact issues so the review stays concise.
 
 Format:
 Return your review as a numbered list. Each item: Issue -> Impact -> Fix."""
@@ -62,7 +63,5 @@ if __name__ == "__main__":
         print("Set GROQ_API_KEY or ANTHROPIC_API_KEY in a .env file.")
     else:
         print(f"Provider: {selected_provider()}")
-        for label, system_prompt in (("WEAK_SYSTEM", WEAK_SYSTEM), ("STRONG_SYSTEM", STRONG_SYSTEM)):
-            print(f"=== {label} review ===")
-            print(review_with(system_prompt))
-            print()
+        print("=== STRONG_SYSTEM review ===")
+        print(review_with(STRONG_SYSTEM))

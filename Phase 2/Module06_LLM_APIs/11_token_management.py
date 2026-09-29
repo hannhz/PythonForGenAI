@@ -24,7 +24,7 @@ def count_tokens_demo() -> None:
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     response = client.messages.count_tokens(
-        model="claude-sonnet-5",
+        model="claude-sonnet-4-5",
         system="You are a concise assistant.",
         messages=[{"role": "user", "content": "Explain the transformer architecture."}],
     )
@@ -34,7 +34,7 @@ def count_tokens_demo() -> None:
 # ── Cost estimator (pure Python - no API needed) ──────────────────────────────
 
 PRICING = {
-    "claude-sonnet-5":   {"input": 2.00,  "output": 10.00},  # per 1M tokens
+    "claude-sonnet-4-5": {"input": 3.00,  "output": 15.00},  # per 1M tokens
     "claude-opus-4-5":   {"input": 15.00, "output": 75.00},
     "gpt-4o":             {"input": 2.50,  "output": 10.00},
     "gpt-4o-mini":        {"input": 0.15,  "output": 0.60},
@@ -52,7 +52,7 @@ def estimate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
 # ── Context window limits (always check before sending long documents) ───────
 
 CONTEXT_LIMITS = {
-    "claude-sonnet-5": 1_000_000,
+    "claude-sonnet-4-5": 200_000,
     "claude-opus-4-5":   200_000,
     "gpt-4o":             128_000,
     "gpt-4o-mini":        128_000,
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         print("Skipping Anthropic count_tokens() because Groq/offline mode is active.")
 
     print()
-    cost = estimate_cost("claude-sonnet-5", input_tokens=500, output_tokens=300)
+    cost = estimate_cost("claude-sonnet-4-5", input_tokens=500, output_tokens=300)
     print(f"Estimated cost: ${cost:.6f}")
 
     print(fits_in_context("gpt-4o", token_count=120_000))    # True

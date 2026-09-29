@@ -118,4 +118,4 @@ if __name__ == "__main__":
         msgs = [ChatMessage(role="user", content="What is a vector database?")]
         result = client.chat(msgs, system="Be concise.")
         print(result.text)
-        print(f"Usage: {result.input_tokens} in, {result.output_tokens} out")
+        print(f"Cost estimate: {result.input_tokens} in, {result.output_tokens} out")

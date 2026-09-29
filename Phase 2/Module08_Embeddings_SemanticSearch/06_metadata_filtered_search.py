@@ -11,14 +11,10 @@
 from dataclasses import dataclass, field
 from typing import Any, Callable, Optional
 import numpy as np
-from openai import OpenAI
-import os
 from dotenv import load_dotenv
+from _embedding_provider import embed_texts as provider_embed_texts, has_embedding_provider
 
 load_dotenv()
-
-openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"]) if os.getenv("OPENAI_API_KEY") else None
-
 
 @dataclass
 class FilteredDocument:
@@ -29,8 +25,7 @@ class FilteredDocument:
 
 
 def embed_texts(texts: list[str]) -> np.ndarray:
-    resp = openai_client.embeddings.create(input=texts, model="text-embedding-3-small")
-    vecs = np.array([e.embedding for e in sorted(resp.data, key=lambda x: x.index)], dtype=np.float32)
+    vecs = provider_embed_texts(texts, model="text-embedding-3-small")
     norms = np.linalg.norm(vecs, axis=1, keepdims=True)
     return vecs / np.where(norms == 0, 1, norms)
 
@@ -85,8 +80,8 @@ DOCS = [
 
 
 if __name__ == "__main__":
-    if openai_client is None:
-        print("OPENAI_API_KEY is not set. Add it to a .env file in this folder.")
+    if not has_embedding_provider():
+        print("Set OPENAI_API_KEY or GEMINI_API_KEY to run filtered search.")
     else:
         fstore = FilteredVectorStore()
         fstore.add(DOCS)

@@ -197,6 +197,19 @@ class _GroqMessages:
         self._client = client
         self._model = model
 
+    def _reasoning_options(self, thinking: dict | None) -> dict[str, Any]:
+        """Translate Anthropic's disabled-thinking flag for Groq GPT-OSS."""
+        if (
+            self._model.startswith("openai/gpt-oss")
+            and thinking
+            and thinking.get("type") == "disabled"
+        ):
+            return {
+                "reasoning_effort": "low",
+                "extra_body": {"reasoning_format": "hidden"},
+            }
+        return {}
+
     def create(
         self,
         *,
@@ -204,12 +217,14 @@ class _GroqMessages:
         system: str = "",
         max_tokens: int = 1024,
         tools: list[dict] | None = None,
+        thinking: dict | None = None,
         **_: Any,
     ) -> SimpleNamespace:
         kwargs: dict[str, Any] = {
             "model": self._model,
             "messages": _to_openai_messages(messages, system),
             "max_completion_tokens": max_tokens,
+            **self._reasoning_options(thinking),
         }
         openai_tools = _to_openai_tools(tools)
         if openai_tools:
@@ -222,15 +237,18 @@ class _GroqMessages:
         messages: list[dict],
         system: str = "",
         max_tokens: int = 1024,
+        thinking: dict | None = None,
         **_: Any,
     ) -> _GroqStream:
-        stream = self._client.chat.completions.create(
-            model=self._model,
-            messages=_to_openai_messages(messages, system),
-            max_completion_tokens=max_tokens,
-            stream=True,
-            stream_options={"include_usage": True},
-        )
+        kwargs: dict[str, Any] = {
+            "model": self._model,
+            "messages": _to_openai_messages(messages, system),
+            "max_completion_tokens": max_tokens,
+            "stream": True,
+            "stream_options": {"include_usage": True},
+            **self._reasoning_options(thinking),
+        }
+        stream = self._client.chat.completions.create(**kwargs)
         return _GroqStream(stream)
 
 

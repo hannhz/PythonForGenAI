@@ -23,13 +23,13 @@ load_dotenv()
 TOOLS = [
     {
         "name": "get_model_info",
-        "description": "Returns context window size and USD cost per one million tokens.",
+        "description": "Returns context window size and cost per 1K tokens for a given LLM.",
         "input_schema": {
             "type": "object",
             "properties": {
                 "model_name": {
                     "type": "string",
-                    "description": "The model identifier, e.g. 'gpt-4o' or 'claude-sonnet-5'.",
+                    "description": "The model identifier, e.g. 'gpt-4o' or 'claude-sonnet-4-5'.",
                 }
             },
             "required": ["model_name"],
@@ -41,21 +41,9 @@ TOOLS = [
 # 2. The actual function the tool will call
 def get_model_info(model_name: str) -> dict:
     db = {
-        "claude-sonnet-5": {
-            "context_tokens": 1_000_000,
-            "input_usd_per_million_tokens": 2.00,
-            "output_usd_per_million_tokens": 10.00,
-        },
-        "gpt-4o": {
-            "context_tokens": 128_000,
-            "input_usd_per_million_tokens": 2.50,
-            "output_usd_per_million_tokens": 10.00,
-        },
-        "gemini-1.5-pro": {
-            "context_tokens": 1_000_000,
-            "input_usd_per_million_tokens": 1.25,
-            "output_usd_per_million_tokens": 5.00,
-        },
+        "claude-sonnet-4-5": {"context_k": 200, "cost_input": 3.00, "cost_output": 15.00},
+        "gpt-4o":            {"context_k": 128, "cost_input": 2.50, "cost_output": 10.00},
+        "gemini-1.5-pro":    {"context_k": 1000, "cost_input": 1.25, "cost_output": 5.00},
     }
     return db.get(model_name, {"error": f"Unknown model: {model_name}"})
 
@@ -70,7 +58,7 @@ def run_tool_call_demo() -> None:
         thinking={"type": "disabled"},
         tools=TOOLS,
         messages=[
-            {"role": "user", "content": "How large is the context window of claude-sonnet-5?"}
+            {"role": "user", "content": "How large is the context window of claude-sonnet-4-5?"}
         ],
     )
 
@@ -93,7 +81,7 @@ def run_tool_call_demo() -> None:
             thinking={"type": "disabled"},
             tools=TOOLS,
             messages=[
-                {"role": "user", "content": "How large is the context window of claude-sonnet-5?"},
+                {"role": "user", "content": "How large is the context window of claude-sonnet-4-5?"},
                 {"role": "assistant", "content": response.content},
                 {
                     "role": "user",

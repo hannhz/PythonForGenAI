@@ -8,7 +8,6 @@
 # real embed_fn (OpenAI's text-embedding-3-small) when you have an API key.
 
 import hashlib
-import os
 import re
 import sqlite3
 from pathlib import Path
@@ -16,6 +15,7 @@ from typing import Callable
 
 import numpy as np
 from dotenv import load_dotenv
+from _embedding_provider import embed_texts as provider_embed_texts
 
 load_dotenv()
 
@@ -39,12 +39,8 @@ def mock_embed(texts: list[str], dim: int = 16) -> np.ndarray:
 
 
 def real_openai_embed(texts: list[str], model: str = "text-embedding-3-small") -> np.ndarray:
-    """The real embedder from section 8.2 - needs OPENAI_API_KEY."""
-    from openai import OpenAI
-    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-    resp = client.embeddings.create(input=texts, model=model)
-    vectors = sorted(resp.data, key=lambda e: e.index)
-    return np.array([v.embedding for v in vectors], dtype=np.float32)
+    """Real embedder from section 8.2 using OpenAI or Gemini."""
+    return provider_embed_texts(texts, model=model)
 
 
 def _normalise(matrix: np.ndarray) -> np.ndarray:
@@ -231,7 +227,7 @@ class EmbeddingCache:
 
 if __name__ == "__main__":
     print("=== Exercise 1: DuplicateDetector (offline, mock embeddings) ===")
-    detector = DuplicateDetector(threshold=0.0)   # threshold=0 just to show pair scores
+    detector = DuplicateDetector(threshold=0.95)
     corpus = [
         "What is RAG?",
         "What is RAG?",              # exact duplicate of the first

@@ -9,12 +9,12 @@
 # gated behind an OPENAI_API_KEY check.
 
 import importlib.util
-import os
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 from dotenv import load_dotenv
+from _embedding_provider import has_embedding_provider
 
 load_dotenv()
 
@@ -92,9 +92,9 @@ if __name__ == "__main__":
     print("recall@3:   ", recall_at_k(mock_retrieved, mock_relevant, k=3))
     print("MRR:        ", mean_reciprocal_rank(mock_retrieved, mock_relevant))
 
-    print("\n=== evaluate_retrieval() against a real VectorStore (needs OPENAI_API_KEY) ===")
-    if not os.getenv("OPENAI_API_KEY"):
-        print("Skipped - OPENAI_API_KEY not set.")
+    print("\n=== evaluate_retrieval() against a real VectorStore (needs embedding key) ===")
+    if not has_embedding_provider():
+        print("Skipped - no OpenAI/Gemini embedding key set.")
     else:
         vs_module = _load_vector_store_module()
         store = vs_module.VectorStore()

@@ -26,51 +26,38 @@ def chunk_by_sentences(
     overlap_chars: int = 100,
 ) -> list[Chunk]:
     """
-    Split text into chunks that respect sentence boundaries. ``max_chars`` is
-    a soft limit when one sentence alone is longer than it. Overlap keeps whole
-    sentences so words are never cut at chunk edges.
+    Split text into chunks that respect sentence boundaries.
+    Adds overlap so context is not lost at chunk edges.
     """
-    if max_chars <= 0:
-        raise ValueError("max_chars must be greater than zero.")
-    if not 0 <= overlap_chars < max_chars:
-        raise ValueError("overlap_chars must be between 0 and max_chars - 1.")
-
-    # Keep source spans so Chunk.char_start/char_end point to the exact text.
-    sentences = [
-        (match.start(), match.end())
-        for match in re.finditer(r"\S.*?(?:[.!?](?=\s|$)|$)", text, re.DOTALL)
-    ]
+    # Split on sentence endings
+    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
 
     chunks: list[Chunk] = []
-    current: list[tuple[int, int]] = []
+    current = ""
+    char_offset = 0
     chunk_idx = 0
 
-    for sentence_span in sentences:
-        candidate_start = current[0][0] if current else sentence_span[0]
-        candidate_end = sentence_span[1]
+    for sentence in sentences:
+        candidate = (current + " " + sentence).strip() if current else sentence
 
-        if current and candidate_end - candidate_start > max_chars:
-            start, end = current[0][0], current[-1][1]
-            chunks.append(Chunk(doc_id, chunk_idx, text[start:end], start, end))
+        if len(candidate) > max_chars and current:
+            # Save current chunk
+            end = char_offset + len(current)
+            chunks.append(Chunk(doc_id, chunk_idx, current.strip(), char_offset, end))
             chunk_idx += 1
 
-            # Retain whole trailing sentences that intersect the requested
-            # overlap window, then add the new sentence.
-            overlap_boundary = end - overlap_chars
-            current = [span for span in current if span[1] > overlap_boundary]
-            current.append(sentence_span)
-
-            # Drop the oldest overlap sentences if they make the new chunk too
-            # large. The new sentence itself is never discarded.
-            while len(current) > 1 and current[-1][1] - current[0][0] > max_chars:
-                current.pop(0)
+            # Start new chunk with overlap from end of previous
+            overlap_start = max(0, len(current) - overlap_chars)
+            overlap_text = current[overlap_start:]
+            current = (overlap_text + " " + sentence).strip()
+            char_offset = end - len(overlap_text)
         else:
-            current.append(sentence_span)
+            current = candidate
 
     # Save final chunk
-    if current:
-        start, end = current[0][0], current[-1][1]
-        chunks.append(Chunk(doc_id, chunk_idx, text[start:end], start, end))
+    if current.strip():
+        end = char_offset + len(current)
+        chunks.append(Chunk(doc_id, chunk_idx, current.strip(), char_offset, end))
 
     return chunks
 

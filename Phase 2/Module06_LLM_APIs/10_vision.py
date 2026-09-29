@@ -72,22 +72,29 @@ def _gemini_client():
 
 
 def _describe_with_gemini(data: bytes, media_type: str, prompt: str) -> str:
-    # Keep a strong reference to the client until the request completes.
-    # Calling `_gemini_client().interactions.create(...)` directly allows the
-    # temporary client to be finalized and closed before the request is sent.
+    from google.genai import types
+    from google.genai.errors import ServerError
+
     with _gemini_client() as client:
-        response = client.interactions.create(
-            model=GEMINI_MODEL,
-            input=[
-                {"type": "text", "text": prompt},
-                {
-                    "type": "image",
-                    "data": base64.b64encode(data).decode("utf-8"),
-                    "mime_type": media_type,
-                },
-            ],
-        )
-    return response.output_text
+        models = [GEMINI_MODEL]
+        if GEMINI_MODEL != "gemini-2.5-flash":
+            models.append("gemini-2.5-flash")
+
+        for index, model in enumerate(models):
+            try:
+                chat = client.chats.create(model=model)
+                response = chat.send_message(
+                    [
+                        prompt,
+                        types.Part.from_bytes(data=data, mime_type=media_type),
+                    ]
+                )
+                if response.text:
+                    return response.text
+            except ServerError:
+                if index == len(models) - 1:
+                    raise
+    return "(no text returned by Gemini)"
 
 
 def _describe_with_anthropic(content: dict, prompt: str) -> str:
@@ -155,7 +162,7 @@ if __name__ == "__main__":
     else:
         print(f"Vision provider: {provider}")
         text = describe_image_url(
-            "https://upload.wikimedia.org/wikipedia/commons/d/d0/"
-            "Sunrise_over_the_Sea.jpg"
+            "https://raw.githubusercontent.com/python-pillow/Pillow/main/"
+            "Tests/images/hopper.jpg"
         )
         print(text)

@@ -36,14 +36,8 @@ TOOLS = [
 
 def get_model_info(model_name: str) -> dict:
     db = {
-        "gpt-4o": {
-            "context_tokens": 128_000,
-            "input_usd_per_million_tokens": 2.50,
-        },
-        "claude-sonnet-5": {
-            "context_tokens": 1_000_000,
-            "input_usd_per_million_tokens": 2.00,
-        },
+        "gpt-4o":            {"context_k": 128, "cost_input": 2.50},
+        "claude-sonnet-4-5": {"context_k": 200, "cost_input": 3.00},
     }
     return db.get(model_name, {"error": "unknown model"})
 
@@ -52,7 +46,16 @@ def run_tool_call_demo() -> None:
     client, model, provider = get_openai_compatible_client()
     print(f"Provider: {provider}")
 
-    messages = [{"role": "user", "content": "What is gpt-4o's context window?"}]
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "Values named context_k are measured in thousands of tokens: "
+                "context_k=128 means 128K or 128,000 tokens. Answer in one concise sentence."
+            ),
+        },
+        {"role": "user", "content": "What is gpt-4o's context window?"},
+    ]
 
     response = client.chat.completions.create(
         model=model,
