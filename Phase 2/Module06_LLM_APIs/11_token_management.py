@@ -72,7 +72,15 @@ if __name__ == "__main__":
         print("Skipping Anthropic count_tokens() because Groq/offline mode is active.")
 
     print()
-    cost = estimate_cost("claude-sonnet-4-5", input_tokens=500, output_tokens=300)
+    input_tokens = 500
+    output_tokens = 300
+    cost = estimate_cost(
+        "claude-sonnet-4-5",
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+    )
+    print(f"Input tokens: {input_tokens}")
+    print(f"Output tokens: {output_tokens}")
     print(f"Estimated cost: ${cost:.6f}")
 
     print(fits_in_context("gpt-4o", token_count=120_000))    # True

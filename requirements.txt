@@ -1,14 +1,49 @@
 # HTTP client used by Module04_FileIO_APIs
-httpx==0.28.1
+httpx>=0.28
 
 # Loads .env files in Module04_FileIO_APIs
-python-dotenv==1.2.3
+python-dotenv>=1.0
 
 # Data processing used by Module05_PythonForData
-numpy==2.5.3
-pandas==3.0.5
+numpy>=2.0
+pandas>=2.2
 
 # LLM provider SDKs used by Phase 2 (Modules 06-08)
-anthropic==1.8.0
-openai==3.19.2
-google-genai==2.23.0
+anthropic>=0.69
+openai>=1.90
+google-genai>=1.0
+
+# ---------------------------------------------------------------------------
+# Phase 3 (Modules 09-14)
+# NOTE: crewai requires Python >=3.10, <3.14 -- do NOT use Python 3.14.
+# ---------------------------------------------------------------------------
+
+# Module09_LangChain (RAG scripts also use chromadb, listed below)
+langchain-core>=1.0
+langchain-openai>=1.0
+langchain-anthropic>=1.0
+langchain-community>=0.4
+langchain-text-splitters>=1.0
+langchain-chroma>=0.2
+
+# Module10_LlamaIndex
+llama-index>=0.14
+
+# Module11_VectorDatabases
+chromadb>=1.1
+pinecone>=7.0
+weaviate-client>=4.16
+
+# Module12_HuggingFace (heavy; comment out if you skip real-model training)
+# transformers>=4.50
+# torch>=2.6
+# peft>=0.15
+# datasets>=3.0
+# accelerate>=1.0
+
+# Module13_LangGraph_Agents
+langgraph>=1.0
+
+# Module14_CrewAI (requires Python <3.14)
+crewai>=1.0
+pydantic>=2.0

@@ -1,0 +1,1 @@
+Fine-tuning continues training a pre-trained model on a curated dataset so it performs better on one specific task. It changes the model weights, unlike prompt engineering.

@@ -228,10 +228,17 @@ if __name__ == "__main__":
 
     print("\n=== Exercise 2: TokenBudgetManager ===")
     budget = TokenBudgetManager(max_tokens=1000)
+
+    print("-- Within budget --")
     budget.record(input_tokens=300, output_tokens=200)
     print(f"Used: {budget.used_tokens}, remaining: {budget.remaining}")
+
+    budget.record(input_tokens=200, output_tokens=100)
+    print(f"Used: {budget.used_tokens}, remaining: {budget.remaining}")
+
+    print("-- Over budget --")
     try:
-        budget.record(input_tokens=400, output_tokens=300)   # would push total to 1200 > 1000
+        budget.record(input_tokens=150, output_tokens=100)   # would push total to 1050 > 1000
     except BudgetExceeded as e:
         print(f"Raised as expected: {e}")
 

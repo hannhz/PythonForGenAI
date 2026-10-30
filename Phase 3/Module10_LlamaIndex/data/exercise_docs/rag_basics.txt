@@ -1,0 +1,1 @@
+Retrieval-Augmented Generation (RAG) retrieves relevant passages from an external knowledge base and gives them to a language model as context. This lets the model answer questions about data it was never trained on.

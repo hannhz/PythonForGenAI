@@ -1,0 +1,1 @@
+Prompt engineering designs the input given to a model to get better outputs without any training. Techniques include few-shot examples and chain-of-thought prompting.

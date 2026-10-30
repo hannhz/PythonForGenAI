@@ -1,0 +1,1 @@
+Vector databases store embeddings and answer nearest-neighbour queries quickly. HNSW and IVF are the most common approximate search algorithms. ChromaDB, Pinecone and Weaviate are popular choices.

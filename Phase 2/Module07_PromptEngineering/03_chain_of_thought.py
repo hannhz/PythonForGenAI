@@ -41,8 +41,14 @@ Problem: A pipeline makes 50 API calls per hour. Each call uses an average of 1,
 and 400 output tokens. The model costs $3.00/M input and $15.00/M output.
 What is the daily cost?"""
 
+PLAIN_TEXT_SYSTEM = """Write calculations as plain terminal-friendly text.
+Do not use LaTeX commands or math delimiters. Use / for division and * for
+multiplication. Keep the explanation concise."""
+
 # Structured CoT with XML tags - makes it easy to parse the final answer
 STRUCTURED_SYSTEM = """Solve problems using this exact format:
+
+Use plain terminal-friendly text only. Do not use LaTeX commands or math delimiters.
 
 <thinking>
 Step-by-step reasoning here.
@@ -65,13 +71,25 @@ def compare_direct_vs_cot() -> None:
     for label, prompt in [("Direct", DIRECT_PROMPT), ("CoT", COT_PROMPT), ("Zero-shot CoT", ZERO_SHOT_COT)]:
         resp = client.messages.create(
             model="claude-sonnet-5",
-            max_tokens=512,
+            max_tokens=1024,
             thinking={"type": "disabled"},
+            system=PLAIN_TEXT_SYSTEM,
             messages=[{"role": "user", "content": prompt}],
         )
         print(f"=== {label} ===")
-        print(resp.content[0].text[:300])
+        text = response_text(resp)
+        print(text if text else "Provider returned no visible text; try again.")
         print()
+
+
+def response_text(response) -> str:
+    """Collect visible text blocks without assuming content[0] exists."""
+    return "\n".join(
+        block.text
+        for block in getattr(response, "content", [])
+        if getattr(block, "type", None) == "text"
+        and getattr(block, "text", "").strip()
+    ).strip()
 
 
 def structured_cot_demo() -> None:
@@ -79,20 +97,35 @@ def structured_cot_demo() -> None:
 
     resp = client.messages.create(
         model="claude-sonnet-5",
-        max_tokens=512,
+        # Groq reasoning models may use part of this budget internally before
+        # returning visible text. A larger limit avoids an empty response.
+        max_tokens=1024,
         thinking={"type": "disabled"},
         system=STRUCTURED_SYSTEM,
         messages=[{"role": "user", "content": STRUCTURED_QUESTION}],
     )
 
-    text = resp.content[0].text
+    text = response_text(resp)
+    if not text:
+        print("Reasoning: provider returned no visible text")
+        print("Answer:    try running this section again")
+        return
 
-    # Extract sections
-    thinking = re.search(r"<thinking>(.*?)</thinking>", text, re.DOTALL)
-    answer = re.search(r"<answer>(.*?)</answer>", text, re.DOTALL)
+    # Extract sections. IGNORECASE also accepts <Thinking>/<Answer>.
+    thinking = re.search(
+        r"<thinking\s*>(.*?)</thinking\s*>", text, re.DOTALL | re.IGNORECASE
+    )
+    answer = re.search(
+        r"<answer\s*>(.*?)</answer\s*>", text, re.DOTALL | re.IGNORECASE
+    )
 
-    print("Reasoning:", thinking.group(1).strip() if thinking else "not found")
-    print("Answer:   ", answer.group(1).strip() if answer else "not found")
+    if thinking and answer:
+        print("Reasoning:", thinking.group(1).strip())
+        print("Answer:   ", answer.group(1).strip())
+    else:
+        # The calculation is still useful when a model ignores the XML format.
+        print("Response:")
+        print(text)
 
 
 if __name__ == "__main__":
